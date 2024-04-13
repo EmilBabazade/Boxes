@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.9.34622.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Boxes", "Boxes\Boxes.csproj", "{772F950C-FB94-4838-AB2E-B3907D0B9BC8}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackgroundJob", "BackgroundJob\BackgroundJob.csproj", "{EF8F0974-6B06-42B4-87B5-07A7D49032A0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Services", "Services\Services.csproj", "{6555BE9D-6A2D-45F0-8FCC-0B620C1CAB86}"
@@ -17,10 +15,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{772F950C-FB94-4838-AB2E-B3907D0B9BC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{772F950C-FB94-4838-AB2E-B3907D0B9BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{772F950C-FB94-4838-AB2E-B3907D0B9BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{772F950C-FB94-4838-AB2E-B3907D0B9BC8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EF8F0974-6B06-42B4-87B5-07A7D49032A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EF8F0974-6B06-42B4-87B5-07A7D49032A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EF8F0974-6B06-42B4-87B5-07A7D49032A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
