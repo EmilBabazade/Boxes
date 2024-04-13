@@ -4,7 +4,7 @@ internal class Box
     public required string SupplierId { get; set; }
     public required string Id { get; set; }
 
-    public required ICollection<Item> Items { get; set; }
+    public required ICollection<Item> Items { get; set; } = [];
 
     // just to make logging easier
     public override string ToString()
