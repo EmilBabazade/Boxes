@@ -94,6 +94,5 @@ public class BoxProcessingService : IBoxProcessingService
         }
     }
 
-    //TODO: sqlite db
     //TODO: UPDATE THE BOX IF IT ALREADY EXISTS
 }

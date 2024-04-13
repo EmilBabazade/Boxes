@@ -4,9 +4,9 @@ namespace BackgroundJob;
 
 public class Worker : BackgroundService
 {
-    private const string TO_PROCESS_DIRNAME = "/toProcess";
-    private const string PROCESSED_DIRNAME = "/processed";
-    private const string INVALID_FILES_DIRNAME = "/invalidFiles";
+    private const string TO_PROCESS_DIRNAME = "toProcess";
+    private const string PROCESSED_DIRNAME = "processed";
+    private const string INVALID_FILES_DIRNAME = "invalidFiles";
     private readonly ILogger<Worker> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
@@ -34,7 +34,7 @@ public class Worker : BackgroundService
     private async Task ProcessFiles(CancellationToken cancellationToken = default)
     {
         var currentDir = Directory.GetCurrentDirectory();
-        var toProcessDir = new DirectoryInfo(currentDir  + TO_PROCESS_DIRNAME);
+        var toProcessDir = new DirectoryInfo(Path.Join(currentDir, TO_PROCESS_DIRNAME));
         var fileList = toProcessDir.GetFiles("*.*", SearchOption.AllDirectories);
 
         var invalidFiles = fileList.Where(f => f.Extension != ".txt");
@@ -44,7 +44,7 @@ public class Worker : BackgroundService
             {
                 MoveFileToProcessingDirs(invalidFile, INVALID_FILES_DIRNAME);
             }
-            throw new ApplicationException($"Invalid files in {toProcessDir}. Moved them to {currentDir + INVALID_FILES_DIRNAME}");
+            throw new ApplicationException($"Invalid files in {toProcessDir}. Moved them to {Path.Join(currentDir + INVALID_FILES_DIRNAME)}");
         }
 
         var fileToProcess = fileList.Where(f => f.Extension == ".txt").FirstOrDefault();
@@ -75,13 +75,6 @@ public class Worker : BackgroundService
     {
         ArgumentNullException.ThrowIfNull(invalidFile);
         var currentDir = Directory.GetCurrentDirectory();
-        try
-        {
-            File.Move(invalidFile.FullName, currentDir + dirName + "/" + invalidFile.Name);
-        }
-        catch (IOException)
-        {
-            File.Move(invalidFile.FullName, currentDir + dirName + "/" + invalidFile.Name + DateTimeOffset.Now.ToUnixTimeSeconds());
-        }
+        File.Move(invalidFile.FullName, Path.Join(currentDir, dirName, invalidFile.Name + DateTimeOffset.Now.ToUnixTimeSeconds()));
     }
 }
