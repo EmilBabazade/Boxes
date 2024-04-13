@@ -1,4 +1,4 @@
-﻿using Data;
+﻿using Data.DTOs;
 using Microsoft.Extensions.Logging;
 using System.Text;
 
@@ -17,9 +17,9 @@ public class BoxProcessingService : IBoxProcessingService
     {
         using var fs = new FileStream(fileDir, FileMode.Open);
         var buffer = new byte[CHUNKS_TO_READ];
-        var boxes = new List<Box>();
+        var boxes = new List<BoxDTO>();
         var isLineValid = true;
-        Box? box = null;
+        BoxDTO? box = null;
         List<string>? cutUpLine = null;
         while (await fs.ReadAsync(buffer, 0, buffer.Length) > 0)
         {
@@ -51,16 +51,16 @@ public class BoxProcessingService : IBoxProcessingService
 
     
 
-    private void ProcessLine(List<Box> boxes, ref Box box, ref List<string>? cutUpLine, string[] lineElements)
+    private void ProcessLine(List<BoxDTO> boxes, ref BoxDTO box, ref List<string>? cutUpLine, string[] lineElements)
     {
         if (lineElements[0] == "HDR" && lineElements.Count() == 3)
         {
-            box = new Box(lineElements[1], lineElements[2]);
+            box = new BoxDTO(lineElements[1], lineElements[2]);
             boxes.Add(box);
         }
         else if (lineElements[0] == "LINE" && lineElements.Count() == 4)
         {
-            var item = new Item(long.Parse(lineElements[2]), lineElements[1], int.Parse(lineElements[3]));
+            var item = new ItemDTO(long.Parse(lineElements[2]), lineElements[1], int.Parse(lineElements[3]));
             box.Items.Add(item);
         }
         // after processing CHUNKS_TO_READ sized chunk from the file, sometimes a line gets cut in half
@@ -82,12 +82,12 @@ public class BoxProcessingService : IBoxProcessingService
             cutUpLine.AddRange(lineElements);
             if (cutUpLine[0] == "HDR")
             {
-                box = new Box(cutUpLine[1], cutUpLine[2]);
+                box = new BoxDTO(cutUpLine[1], cutUpLine[2]);
                 boxes.Add(box);
             }
             else if (cutUpLine[0] == "LINE")
             {
-                var item = new Item(long.Parse(cutUpLine[2]), cutUpLine[1], int.Parse(cutUpLine[3]));
+                var item = new ItemDTO(long.Parse(cutUpLine[2]), cutUpLine[1], int.Parse(cutUpLine[3]));
                 box.Items.Add(item);
             }
             cutUpLine = null;

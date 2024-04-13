@@ -1,8 +1,10 @@
-﻿namespace Data;
+﻿using Domain;
 
-public class Item
+namespace Data.DTOs;
+
+public class ItemDTO : IItem
 {
-    public Item(long isbn, string po, int qty)
+    public ItemDTO(long isbn, string po, int qty)
     {
         ISBN = isbn;
         PO = po;
@@ -12,6 +14,7 @@ public class Item
     public string PO { get; set; }
 
     public int Qty { get; set; }
+    public int BoxId { get; set; }
 
     // just to make logging easier
     public override string ToString()
