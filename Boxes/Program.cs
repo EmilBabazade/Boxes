@@ -86,7 +86,6 @@ static void ParseLines(List<Box> boxes, ref Box box, ref List<string> cutUpLine,
     }
 }
 
-//TODO: background job
 //TODO: logging
 //TODO: validation(skip and log if invalid)
 //TODO: scan the toProcess folder

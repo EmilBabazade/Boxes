@@ -1,3 +1,5 @@
+using Services.BoxProcessing;
+
 namespace BackgroundJob;
 
 public class Worker : BackgroundService
@@ -6,10 +8,12 @@ public class Worker : BackgroundService
     private const string PROCESSED_DIRNAME = "/processed";
     private const string INVALID_FILES_DIRNAME = "/invalidFiles";
     private readonly ILogger<Worker> _logger;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public Worker(ILogger<Worker> logger)
+    public Worker(ILogger<Worker> logger, IServiceScopeFactory serviceScopeFactory)
     {
         _logger = logger;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -18,8 +22,7 @@ public class Worker : BackgroundService
         {
             try
             {
-                processFiles();
-                await Task.Delay(1000, stoppingToken);
+                await ProcessFiles(stoppingToken);
             }
             catch (ApplicationException ex)
             {
@@ -28,7 +31,7 @@ public class Worker : BackgroundService
         }
     }
 
-    private void processFiles()
+    private async Task ProcessFiles(CancellationToken cancellationToken = default)
     {
         var currentDir = Directory.GetCurrentDirectory();
         var toProcessDir = new DirectoryInfo(currentDir  + TO_PROCESS_DIRNAME);
@@ -39,7 +42,7 @@ public class Worker : BackgroundService
         {
             foreach(var invalidFile in invalidFiles)
             {
-                File.Move(invalidFile.FullName, currentDir + INVALID_FILES_DIRNAME + "/" + invalidFile.Name);
+                MoveFileToProcessingDirs(invalidFile, INVALID_FILES_DIRNAME);
             }
             throw new ApplicationException($"Invalid files in {toProcessDir}. Moved them to {currentDir + INVALID_FILES_DIRNAME}");
         }
@@ -48,16 +51,37 @@ public class Worker : BackgroundService
         
         if(fileToProcess != null)
         {
-            // TODO: Do Box stuff
-            Console.WriteLine($"Processing {fileToProcess.FullName}...");
+            Console.WriteLine($"********************************Processing {fileToProcess.FullName}********************************");
+            using var scope = _serviceScopeFactory.CreateScope();
+            var service = scope.ServiceProvider.GetRequiredService<IBoxProcessingService>();
+            var fileIsInvalid = await service.ProcessBoxes(fileToProcess.FullName, cancellationToken);
+            if(fileIsInvalid)
+            {
+                // move invalid files to invalidFiles folder
+                // Keep invalid files so later it can be looked at in UI or something
+                MoveFileToProcessingDirs(fileToProcess, INVALID_FILES_DIRNAME);
+            }
+            else
+            {
+                // move the file to processed folder after finishing work
+                // I just copy them so i can re-use them again
+                // irl i wouldn't keep copy of the processed files unless specified that we want to keep them
+                MoveFileToProcessingDirs(fileToProcess, PROCESSED_DIRNAME);
+            }            
+        }
+    }
 
-            // TODO: move the file to processed folder after finishing work
-            // irl i wouldn't keep copy of the processed files unless specified that we want to keep them
-            // I just copy them so i can re-use them again
-            File.Move(fileToProcess.FullName, currentDir + PROCESSED_DIRNAME + "/" +  fileToProcess.Name);
-
-            // TODO: move invalid files to invalidFiles folder
-            // Keep invalid files so later it can be looked at (in UI or something)
+    private static void MoveFileToProcessingDirs(FileInfo? invalidFile, string dirName)
+    {
+        ArgumentNullException.ThrowIfNull(invalidFile);
+        var currentDir = Directory.GetCurrentDirectory();
+        try
+        {
+            File.Move(invalidFile.FullName, currentDir + dirName + "/" + invalidFile.Name);
+        }
+        catch (IOException)
+        {
+            File.Move(invalidFile.FullName, currentDir + dirName + "/" + invalidFile.Name + DateTimeOffset.Now.ToUnixTimeSeconds());
         }
     }
 }
