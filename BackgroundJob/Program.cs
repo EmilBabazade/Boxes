@@ -3,7 +3,6 @@ using Data;
 using Data.AutomapperProfiles;
 using Microsoft.EntityFrameworkCore;
 using Services.BoxProcessing;
-using System.IO;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();

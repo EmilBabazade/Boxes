@@ -10,13 +10,13 @@ using Services.BoxProcessing;
 
 namespace BoxProcessingServiceTests;
 
-public class TryProcessFileTests
+public class TryProcessFileUnitTests
 {
     private readonly IBoxProcessingService _boxProcessingService;
     private readonly DataContext _dataContext;
     private FileInfo? _fileToProcess;
 
-    public TryProcessFileTests()
+    public TryProcessFileUnitTests()
     {
         var testMapperConfig = new MapperConfiguration(cfg =>
         {
