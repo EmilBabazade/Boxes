@@ -16,7 +16,7 @@ public class Worker : BackgroundService
         _serviceScopeFactory = serviceScopeFactory;
         _toProcessDirname = configuration["TO_PROCESS_DIRNAME"] ?? "toProcess";
         _processedDirname = configuration["PROCESSED_DIRNAME"] ?? "processed";
-        _toProcessDirname = configuration["INVALID_FILES_DIRNAME"] ?? "invalidFiles";
+        _invalidFilesDirname = configuration["INVALID_FILES_DIRNAME"] ?? "invalidFiles";
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
