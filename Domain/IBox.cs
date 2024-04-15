@@ -1,7 +1,7 @@
 ﻿namespace Domain;
 
-public interface IBox
+public interface IBox : IUnique
 {
     public string SupplierId { get; set; }
-    public string Id { get; set; }
+    public string Identifier { get; set; }
 }

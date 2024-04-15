@@ -12,7 +12,8 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<BoxMapperProfile>();
     cfg.AddProfile<itemMapperProfile>();
 });
-builder.Services.AddDbContext<DataContext>(options => options.UseSqlite());
+// normally i would configure dataContext here, but since its just a local db i just put the config in the dataContext class
+builder.Services.AddDbContext<DataContext>();
 
 var host = builder.Build();
 host.Run();

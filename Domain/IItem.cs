@@ -1,5 +1,5 @@
 ﻿namespace Domain;
-public interface IItem
+public interface IItem : IUnique
 {
     public long ISBN { get; set; }
     public string PO { get; set; }

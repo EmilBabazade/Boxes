@@ -18,25 +18,28 @@ namespace Data.Migrations
 
             modelBuilder.Entity("Data.Entities.BoxEntity", b =>
                 {
-                    b.Property<int>("RowId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Id")
+                    b.Property<string>("Identifier")
+                        .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.Property<string>("SupplierId")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.HasKey("RowId");
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("Identifier");
 
                     b.ToTable("Boxes");
                 });
 
             modelBuilder.Entity("Data.Entities.ItemEntity", b =>
                 {
-                    b.Property<int>("RowId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
@@ -53,7 +56,7 @@ namespace Data.Migrations
                     b.Property<int>("Qty")
                         .HasColumnType("INTEGER");
 
-                    b.HasKey("RowId");
+                    b.HasKey("Id");
 
                     b.HasIndex("BoxId");
 

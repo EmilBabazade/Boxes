@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Data.Entities;
 public class ItemEntity : IItem
 {
-    public int RowId { get; set; }
+    public int Id { get; set; }
     public long ISBN { get; set; }
     public string PO { get; set; }
     public int Qty { get; set; }

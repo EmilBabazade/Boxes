@@ -14,21 +14,22 @@ namespace Data.Migrations
                 name: "Boxes",
                 columns: table => new
                 {
-                    RowId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     SupplierId = table.Column<string>(type: "TEXT", nullable: false),
-                    Id = table.Column<string>(type: "TEXT", nullable: true)
+                    Identifier = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Boxes", x => x.RowId);
+                    table.PrimaryKey("PK_Boxes", x => x.Id);
+                    table.UniqueConstraint("AK_Boxes_Identifier", x => x.Identifier);
                 });
 
             migrationBuilder.CreateTable(
                 name: "Items",
                 columns: table => new
                 {
-                    RowId = table.Column<int>(type: "INTEGER", nullable: false)
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     ISBN = table.Column<long>(type: "INTEGER", nullable: false),
                     PO = table.Column<string>(type: "TEXT", nullable: false),
@@ -37,12 +38,12 @@ namespace Data.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Items", x => x.RowId);
+                    table.PrimaryKey("PK_Items", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Items_Boxes_BoxId",
                         column: x => x.BoxId,
                         principalTable: "Boxes",
-                        principalColumn: "RowId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 

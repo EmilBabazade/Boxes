@@ -15,6 +15,7 @@ public class ItemDTO : IItem
 
     public int Qty { get; set; }
     public int BoxId { get; set; }
+    public int Id { get; set; }
 
     // just to make logging easier
     public override string ToString()

@@ -51,23 +51,25 @@ public class Worker : BackgroundService
         
         if(fileToProcess != null)
         {
-            Console.WriteLine($"********************************Processing {fileToProcess.FullName}********************************");
+            Console.WriteLine($"******************Processing {fileToProcess.FullName}******************");
             using var scope = _serviceScopeFactory.CreateScope();
             var service = scope.ServiceProvider.GetRequiredService<IBoxProcessingService>();
-            var fileIsInvalid = await service.ProcessBoxes(fileToProcess.FullName, cancellationToken);
-            if(fileIsInvalid)
-            {
-                // move invalid files to invalidFiles folder
-                // Keep invalid files so later it can be looked at in UI or something
-                MoveFileToProcessingDirs(fileToProcess, INVALID_FILES_DIRNAME);
-            }
-            else
+            var fileIsValid = await service.TryProcessBoxes(fileToProcess.FullName, cancellationToken);
+            _logger.LogInformation($"Finished Processing {fileToProcess.FullName}.");
+            if (fileIsValid)
             {
                 // move the file to processed folder after finishing work
                 // I just copy them so i can re-use them again
                 // irl i wouldn't keep copy of the processed files unless specified that we want to keep them
                 MoveFileToProcessingDirs(fileToProcess, PROCESSED_DIRNAME);
-            }            
+            }
+            else
+            {
+                // move invalid files to invalidFiles folder
+                // Keep invalid files so later it can be looked at in UI or something
+                MoveFileToProcessingDirs(fileToProcess, INVALID_FILES_DIRNAME);
+                _logger.LogWarning($"file {fileToProcess.Name} had invalid lines that were not imported. The file was moved to {INVALID_FILES_DIRNAME}");
+            }
         }
     }
 
