@@ -4,16 +4,19 @@ namespace BackgroundJob;
 
 public class Worker : BackgroundService
 {
-    private const string TO_PROCESS_DIRNAME = "toProcess";
-    private const string PROCESSED_DIRNAME = "processed";
-    private const string INVALID_FILES_DIRNAME = "invalidFiles";
+    private readonly string _toProcessDirname;
+    private readonly string _processedDirname;
+    private readonly string _invalidFilesDirname;
     private readonly ILogger<Worker> _logger;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public Worker(ILogger<Worker> logger, IServiceScopeFactory serviceScopeFactory)
+    public Worker(ILogger<Worker> logger, IServiceScopeFactory serviceScopeFactory, IConfiguration configuration)
     {
         _logger = logger;
         _serviceScopeFactory = serviceScopeFactory;
+        _toProcessDirname = configuration["TO_PROCESS_DIRNAME"] ?? "toProcess";
+        _processedDirname = configuration["PROCESSED_DIRNAME"] ?? "processed";
+        _toProcessDirname = configuration["INVALID_FILES_DIRNAME"] ?? "invalidFiles";
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -34,7 +37,7 @@ public class Worker : BackgroundService
     private async Task ProcessFiles(CancellationToken cancellationToken = default)
     {
         var currentDir = Directory.GetCurrentDirectory();
-        var toProcessDir = new DirectoryInfo(Path.Join(currentDir, TO_PROCESS_DIRNAME));
+        var toProcessDir = new DirectoryInfo(Path.Join(currentDir, _toProcessDirname));
         var fileList = toProcessDir.GetFiles("*.*", SearchOption.AllDirectories);
 
         var invalidFiles = fileList.Where(f => f.Extension != ".txt");
@@ -42,9 +45,9 @@ public class Worker : BackgroundService
         {
             foreach(var invalidFile in invalidFiles)
             {
-                MoveFileToProcessingDirs(invalidFile, INVALID_FILES_DIRNAME);
+                MoveFileToProcessingDirs(invalidFile, _invalidFilesDirname);
             }
-            throw new ApplicationException($"Invalid files in {toProcessDir}. Moved them to {Path.Join(currentDir + INVALID_FILES_DIRNAME)}");
+            throw new ApplicationException($"Invalid files in {toProcessDir}. Moved them to {Path.Join(currentDir + _invalidFilesDirname)}");
         }
 
         var fileToProcess = fileList.Where(f => f.Extension == ".txt").FirstOrDefault();
@@ -60,15 +63,15 @@ public class Worker : BackgroundService
             {
                 // move invalid files to invalidFiles folder
                 // Keep invalid files so later it can be looked at in UI or something
-                MoveFileToProcessingDirs(fileToProcess, INVALID_FILES_DIRNAME);
-                _logger.LogWarning($"file {fileToProcess.Name} had invalid lines that were not imported. The file was moved to {INVALID_FILES_DIRNAME}");
+                MoveFileToProcessingDirs(fileToProcess, _invalidFilesDirname);
+                _logger.LogWarning($"file {fileToProcess.Name} had invalid lines that were not imported. The file was moved to {_invalidFilesDirname}");
             }
             else
             {
                 // move the file to processed folder after finishing work
                 // I just copy them so i can re-use them again
                 // irl i wouldn't keep copy of the processed files unless specified that we want to keep them
-                MoveFileToProcessingDirs(fileToProcess, PROCESSED_DIRNAME);
+                MoveFileToProcessingDirs(fileToProcess, _processedDirname);
             }            
         }
     }

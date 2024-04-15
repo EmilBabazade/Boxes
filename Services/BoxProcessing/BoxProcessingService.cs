@@ -16,7 +16,7 @@ public class BoxProcessingService : IBoxProcessingService
     private readonly ILogger<BoxProcessingService> _logger;
     private readonly DataContext _dataContext;
     private readonly IMapper _mapper;
-    private readonly int _chunkSize = 1024;
+    private readonly int _chunkSize;
     private List<string>? _cutUpLine = null;
     private bool _isFileValid = true;
 
