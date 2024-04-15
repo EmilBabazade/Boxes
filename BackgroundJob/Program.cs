@@ -3,6 +3,7 @@ using Data;
 using Data.AutomapperProfiles;
 using Microsoft.EntityFrameworkCore;
 using Services.BoxProcessing;
+using System.IO;
 
 var builder = Host.CreateApplicationBuilder(args);
 builder.Services.AddHostedService<Worker>();
@@ -12,8 +13,10 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<BoxMapperProfile>();
     cfg.AddProfile<itemMapperProfile>();
 });
-// normally i would configure dataContext here, but since its just a local db i just put the config in the dataContext class
-builder.Services.AddDbContext<DataContext>();
+
+var folder = Environment.SpecialFolder.LocalApplicationData;
+var dbPath = Path.Join(Environment.GetFolderPath(folder), "boxes.db");
+builder.Services.AddDbContext<DataContext>(options => options.UseSqlite($"Data Source={dbPath}"));
 
 var host = builder.Build();
 host.Run();

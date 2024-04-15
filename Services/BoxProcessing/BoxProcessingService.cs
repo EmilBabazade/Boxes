@@ -36,7 +36,7 @@ public class BoxProcessingService : IBoxProcessingService
             var boxesAlreadyInDb = await _dataContext.Boxes.Where(b => boxEntities.Select(be => be.Identifier).Contains(b.Identifier)).AsNoTracking().ToListAsync();
             if (boxesAlreadyInDb != null && boxesAlreadyInDb.Count != 0)
             {
-                // There is no way update based on an alternate key -_- (but ef does use them for tracking )
+                // There is no way update based on an alternate key -_- 
                 var boxesToUpdate = boxEntities.Where(b => boxesAlreadyInDb.Select(b => b.Identifier).Contains(b.Identifier)).ToList();
                 foreach(var b in boxesToUpdate)
                 {
@@ -75,7 +75,7 @@ public class BoxProcessingService : IBoxProcessingService
         BoxDTO? box = null;
         while (await fs.ReadAsync(buffer, 0, buffer.Length) > 0)
         {
-            var data = Encoding.Default.GetString(buffer);
+            var data = Encoding.Default.GetString(buffer).TrimEnd('\0');
             var lines = data.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             var boxes = new List<IUnique>();
             // last box from last chunk

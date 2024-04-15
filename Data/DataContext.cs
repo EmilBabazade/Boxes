@@ -7,19 +7,12 @@ public class DataContext : DbContext
     public DbSet<BoxEntity> Boxes { get; set; }
     public DbSet<ItemEntity> Items { get; set; }
 
-    private readonly string _dbPath = "";
-
-    // normally i would configure dataContext in Program.cs, but since its just a local db i just put the config here
-    public DataContext()
+    public DataContext(DbContextOptions options) : base(options)
     {
-        var folder = Environment.SpecialFolder.LocalApplicationData;
-        var path = Environment.GetFolderPath(folder);
-        _dbPath = Path.Join(path, "boxes.db");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder options)
     {
-        options.UseSqlite($"Data Source={_dbPath}");
         // for debugging
         //options
         //    .LogTo(Console.WriteLine)
